@@ -1,3 +1,5 @@
+import { ApolloProvider } from '@apollo/client';
+
 window.Webflow?.push(async () => {
   try {
     let errorDiv: HTMLElement;
@@ -6,21 +8,21 @@ window.Webflow?.push(async () => {
     console.log('Flow Phantom');
 
     // 1. Remove w-form to prevent Webflow from handling it
-    const emailForm = document.getElementById('email-form') as HTMLFormElement;
+    const phoneForm = document.getElementById('phone-form') as HTMLFormElement;
 
-    console.log('emailForm', emailForm);
+    console.log('phoneForm', phoneForm);
 
-    if (emailForm && emailForm.parentElement) {
-      emailForm.parentElement.classList.remove('w-form');
+    if (phoneForm && phoneForm.parentElement) {
+      phoneForm.parentElement.classList.remove('w-form');
 
       // 2. Find the error and success divs
-      errorDiv = emailForm.parentElement.querySelector(
+      errorDiv = phoneForm.parentElement.querySelector(
         '[data-name-form="error"]'
       ) as HTMLElement;
 
       console.log('errorDiv', errorDiv);
 
-      successDiv = emailForm.parentElement.querySelector(
+      successDiv = phoneForm.parentElement.querySelector(
         '[data-name-form="success"]'
       ) as HTMLElement;
 
@@ -30,23 +32,38 @@ window.Webflow?.push(async () => {
       successDiv.style.display = 'none';
 
       // 3. Add our own submit handler
-      emailForm.onsubmit = async (event) => {
+      phoneForm.onsubmit = async (event) => {
         try {
           event.preventDefault();
 
           // 4. Get the form data
-          const formData = new FormData(emailForm);
+          const formData = new FormData(phoneForm);
 
           // 5. Get the form entries as an object
           const data = Object.fromEntries(formData.entries());
           console.log('Form data', data);
 
+
+
+          const graphqlQuery = {
+            "operationName": "SendPinDigitalVirgoLandingPage",
+            "variables": {
+              "input": {
+                "chosenSubscriptionFrequency": "WEEKLY",
+                "operatorMCCMNC": "MCCMNC_INWI",
+                "phoneNumber": "+212662727279"
+              }
+            },
+            "query": "mutation SendPinDigitalVirgoLandingPage($input: SendPinInput!) {\n  sendPinDigitalVirgoLandingPage(input: $input)\n}\n"
+          }
+          
+
           // 6. Send the data to the server
           const response = await fetch(
-            'http://localhost:3000/api/do-something',
+            'https://p5500-zd57f20cc-z852170c3-gtw.zee620f8d.bool.sh/graphql',
             {
               method: 'POST',
-              body: JSON.stringify(data),
+              body: JSON.stringify(graphqlQuery),
               headers: {
                 'Content-Type': 'application/json'
               }
@@ -63,7 +80,7 @@ window.Webflow?.push(async () => {
           const responseData = await response.json();
 
           console.log('responseData', responseData);
-          emailForm.style.display = 'none';
+          phoneForm.style.display = 'none';
           successDiv.style.display = 'block';
         } catch (e) {
           // 7. Handle the error

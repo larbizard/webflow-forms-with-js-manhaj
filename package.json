@@ -19,6 +19,7 @@
     "webpack-dev-server": "^4.7.4"
   },
   "dependencies": {
+    "@apollo/client": "^3.11.8",
     "@vercel/node": "^2.6.3"
   }
 }
